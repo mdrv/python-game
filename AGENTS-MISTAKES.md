@@ -784,3 +784,130 @@ This connects to multiple previous mistakes:
 - Panda CSS PostCSS installation guide: https://panda-css.com/llms.txt/installation
 - Pattern is consistent across ALL frameworks (Next.js, Svelte, Vite, etc.)
 - AGENTS.md line 81: "Panda CSS: https://panda-css.com/llms.txt"
+
+---
+
+## Mistake 15: Using Old Svelte Event Handler Syntax
+
+### What I Did Wrong:
+
+- Used `on:click={handleClick}` (old Svelte 4 syntax) in DialogueBox.svelte line 63
+- Got Svelte compile error: "Mixing old (on:click) and new syntaxes for event handling is not allowed. Use only the onclick syntax"
+- Correct new Svelte 5 syntax is `onclick={handleClick}`
+- This violated AGENTS.md line 117 which explicitly forbids `on:click` syntax
+
+### Root Cause:
+
+- **Didn't follow AGENTS.md Svelte Guidelines** (lines 115-117):
+  ```
+  ## Svelte Guidelines
+
+  - Always follow latest Svelte 5 syntax
+    - EMBRACE newest features such as $state/$derived/$props, onMount, mount(), @attach, snippets.
+    - AVOID deprecated or outdated syntax such as `export let`, `on:click`, slots, new App(), svelte/store.
+  ```
+- **Didn't consult Svelte 5 documentation** before writing code
+- **Mixed old and new syntax** in the same file - Svelte 5 doesn't allow this
+- **Wrote code quickly** without checking llms.txt link: https://svelte.dev/docs/svelte/llms.txt
+
+### The Error:
+
+```
+[plugin:vite-plugin-svelte] src/components/DialogueBox.svelte:63:3
+Mixing old (on:click) and new syntaxes for event handling is not allowed.
+Use only the onclick syntax
+https://svelte.dev/e/mixed_event_handler_syntaxes
+src/components/DialogueBox.svelte:63:3
+```
+
+### What Was Wrong in DialogueBox.svelte:
+
+```svelte
+<!-- ❌ OLD SYNTAX (line 63) -->
+<div
+  class='dialogue-text'
+  on:click={handleClick}  <!-- Old syntax -->
+  role='button'
+  tabindex='0'
+>
+
+<!-- ✅ CORRECT SYNTAX (what I changed to) -->
+<div
+  class='dialogue-text'
+  onclick={handleClick}  <!-- New Svelte 5 syntax -->
+  role='button'
+  tabindex='0'
+>
+```
+
+Note: I correctly used `onclick` in other parts of the same file (lines 76, 104, 108), but made a mistake on line 63.
+
+### Correct Svelte 5 Event Handler Syntax:
+
+According to Svelte 5 documentation:
+
+**Old Svelte 4:**
+
+```svelte
+<button on:click={handleClick}>Click me</button>
+<button on:submit={handleSubmit}>Submit</button>
+```
+
+**New Svelte 5:**
+
+```svelte
+<button onclick={handleClick}>Click me</button>
+<button onsubmit={handleSubmit}>Submit</button>
+```
+
+The event name is now camelCase and uses `on` prefix, not `on:`.
+
+### Svelte 5 Migration Guide:
+
+- `on:click` → `onclick`
+- `on:submit` → `onsubmit`
+- `on:keydown` → `onkeydown`
+- `on:mouseenter` → `onmouseenter`
+- Pattern: Remove colon, use camelCase
+
+### What I Should Have Done:
+
+1. **Consult Svelte 5 llms.txt** before writing event handlers:
+   - https://svelte.dev/docs/svelte/llms.txt
+   - Section on event handling and event attributes
+2. **Follow AGENTS.md Guidelines** (lines 115-117) which explicitly forbid `on:click`
+3. **Be consistent** with Svelte 5 syntax throughout the file
+4. **Check Svelte migration guide** if uncertain about syntax changes
+
+### Lessons Learned:
+
+- **AGENTS.md is explicit**: It clearly says "AVOID deprecated or outdated syntax such as `export let`, `on:click`, slots, new App(), svelte/store"
+- **Don't mix syntaxes**: Svelte 5 doesn't allow mixing old and new event handlers
+- **Consult documentation**: Before writing any Svelte code, check https://svelte.dev/docs/svelte/llms.txt
+- **Be consistent**: If using Svelte 5 runes ($state, $derived, $props), also use new event syntax
+- **Search for old syntax**: After writing code, search for `on:` pattern to catch any old event handlers
+
+### Verification After Fix:
+
+I verified no more old syntax exists:
+
+```bash
+rg "on:[a-z]+=\{" src/ --type-add 'svelte:*.svelte' -t svelte
+```
+
+Result: No matches found (only CSS properties like `animation:`, `transition:`)
+
+### What Should Have Documented:
+
+- **Error**: Mixed old and new Svelte event handler syntax
+- **Cause**: Didn't consult Svelte 5 docs before writing event handlers
+- **AGENTS.md violation**: Explicitly forbids `on:click` syntax (line 117)
+- **Should have checked**: https://svelte.dev/docs/svelte/llms.txt for event handling
+- **Lesson**: Always check AGENTS.md Svelte Guidelines before writing any Svelte code
+
+### Reference:
+
+- AGENTS.md lines 115-117: Svelte Guidelines (AVOID `on:click`)
+- Svelte 5 documentation: https://svelte.dev/docs/svelte/llms.txt
+- Svelte error guide: https://svelte.dev/e/mixed_event_handler_syntaxes
+- Svelte migration guide: Event handler syntax changes

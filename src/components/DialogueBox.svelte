@@ -60,7 +60,7 @@
 		<!-- Dialogue text -->
 		<div
 			class='dialogue-text'
-			on:click={handleClick}
+			onclick={handleClick}
 			role='button'
 			tabindex='0'
 		>
