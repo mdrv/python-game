@@ -12,6 +12,8 @@ export default defineConfig({
 		alias: {
 			'$lib': path.resolve(__dirname, './src/lib'),
 			'$stores': path.resolve(__dirname, './src/stores'),
+			'$components': path.resolve(__dirname, './src/components'),
+			'$stories': path.resolve(__dirname, './src/stories'),
 		},
 	},
 	server: {

@@ -10,15 +10,19 @@
 		/* Bundler mode */
 		"moduleResolution": "bundler",
 		"allowImportingTsExtensions": true,
+		"allowJs": true,
 		"verbatimModuleSyntax": true,
 		"moduleDetection": "force",
+		"isolatedModules": true,
 		"noEmit": true,
 
 		/* Path aliases */
 		"baseUrl": ".",
 		"paths": {
 			"$lib/*": ["./src/lib/*"],
-			"$stores/*": ["./src/stores/*"]
+			"$stores/*": ["./src/stores/*"],
+			"$components/*": ["./src/components/*"],
+			"$stories/*": ["./src/stories/*"]
 		},
 
 		/* Linting */
