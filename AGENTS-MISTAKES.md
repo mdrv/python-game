@@ -6,7 +6,7 @@
 
 - Ran `bun create vite .` multiple times
 - Got "Operation cancelled" and interactive prompt about empty directory
-- Didn't recognize that existing files (.git, openspec, AGENTS.md) caused the issue
+- Didn't recognize that existing files (.git, openspec, AGENTS.md) caused to issue
 - Attempted to echo answers to stdin and create temp directories unnecessarily
 
 ### Root Cause:
@@ -29,12 +29,10 @@
 
 ### Reference:
 
-- Vite documentation shows the prompt text when directory has files
+- Vite documentation shows that prompt text when directory has files
 - AGENTS.md doesn't explicitly cover this edge case
 
 ---
-
-## Mistake 1: Not Checking NPM Registry Before Specifying Package Versions
 
 ## Mistake 1: Not Checking NPM Registry Before Specifying Package Versions
 
@@ -65,6 +63,11 @@
 - Attempted to create components and stores using Svelte 5 runes
 - Used syntax like `$state`, `$derived`, `$effect`, `$props` without verification
 - Created files with wrong extensions (`stores/*.svelte.ts`)
+
+### Root Cause:
+
+- I was working with outdated mental models of Svelte
+- Didn't consult official documentation for Svelte 5
 
 ### Correct Approach:
 
@@ -98,7 +101,7 @@
   - Ignore files and continue
   - Cancel and document mistakes
 - I should have asked for user permission to remove existing files
-- OR created the project in a temporary directory
+- OR created project in a temporary directory
 
 ### Reference:
 
@@ -132,6 +135,121 @@
 
 ---
 
+## Mistake 5: Not Following Latest Documentation for Svelte 5
+
+### What I Did Wrong:
+
+- Created store files with wrong extensions (`.svelte.ts` instead of `.ts`)
+- Attempted to use Svelte 5 syntax without reading official docs
+- Didn't verify package existence and latest versions on npm registry
+
+### Root Cause:
+
+- I was working with outdated mental models of Svelte
+- Didn't consult official documentation for Svelte 5
+
+### Correct Approach from Latest Docs:
+
+- **Store files should use `.ts` extension, not `.svelte.ts`**
+- **Use runes correctly**: `$state`, `$derived`, `$effect`, `$props` (Svelte 5 specific)
+- **Read official docs** at https://svelte.dev/docs/svelte/llms.txt before using new features
+- **Always verify** package versions on npm registry
+- **Follow framework conventions** from official documentation
+
+### Reference:
+
+- Svelte 5 official docs: https://svelte.dev/docs/svelte/llms.txt
+- Svelte 5 runes reference: Same documentation
+- Vite plugin svelte: Check GitHub README for proper configuration
+- AGENTS.md line: "Before writing code, consult: Vite, Svelte 5, Vite, Panda CSS"
+
+### Outcome:
+
+- Created files with wrong syntax that caused LSP errors
+- Need to recreate files following Svelte 5 conventions
+
+---
+
+## Mistake 6: Not Reflecting on Git Commit Heredoc Error
+
+### What I Did Wrong:
+
+- Attempted to use bash heredoc for multi-line git commit message
+- Got error: "/usr/bin/bash: -c: line 12: unexpected EOF while looking for matching `"'`
+- Did not analyze why heredoc syntax failed in this context
+- Did not document root cause of heredoc issue
+- Immediately switched to a different command without explanation or reflection
+- Proceeded without updating documentation to record lessons learned
+
+### Root Cause:
+
+- Bash heredoc syntax doesn't work the same way inside git commands as it does in bash scripts
+- Git's commit parser processes messages differently, causing heredoc delimiter to cause issues
+- I should have recognized this context difference before attempting to workaround
+- Moving past as error without reflection means missing a learning opportunity
+
+### Correct Approach:
+
+- **Always analyze errors in their specific context** before applying workarounds
+- **Document reasoning** behind errors and solutions tried
+- **Update AGENTS-MISTAKES.md** with root cause analysis
+- **Consider alternative tools** when one approach fails unexpectedly
+- **Ask for guidance** if uncertain about the cause or solution
+
+### What Should Have Documented:
+
+- **Error**: Bash heredoc EOF with git commit
+- **Cause**: Heredoc syntax conflicts with git command parsing
+- **Solution tried**: Simple git commit without heredoc
+- **Lesson**: Understand tool limitations in different contexts
+- **Better approach**: Use git commit with standard quoting, avoid complex shell features in git commands
+- **Ask for guidance** if uncertain about the cause or solution
+
+### Lessons Learned:
+
+- **Tool context matters**: The same technique that works in bash scripts may not work in git command context
+- **Always verify**: Test command syntax in actual target context before use
+- **Document failures**: When a workaround is used, document the original issue and the solution
+- **Don't skip reflection**: Always take time to analyze why something failed before moving past it
+- **Ask when uncertain**: If unsure about the root cause, pause and ask for guidance
+
+---
+
+## Mistake 7: Not Creating Deployable Progress Tracking
+
+### What I Did Wrong:
+
+- Did not create a way for master to track project progress visually
+- Did not make TODO list accessible via a deployed website
+- Proceeded without asking for deployment strategy or approval
+
+### Root Cause:
+
+- Assuming deployment approach without considering practical implementation details
+- Not creating accessible progress tracking from the beginning
+- Missing opportunity to implement progress tracking that serves both local development and remote monitoring needs
+
+### Correct Approach:
+
+- **Create progress.html page** that displays tasks.md content in a clean, readable format
+- **Add deployment task** to implement a simple accessible progress tracker
+- **Document the approach** so it's clear how progress is tracked (markdown file vs website)
+- **Consider alternatives** like separate progress tracking repository or service
+- **Ask for approval** if approach seems over-engineered for current needs
+
+### What Should Have Documented:
+
+- **Error**: No deployable progress tracking created
+- **Missing**: Deployment strategy discussion with master
+- **Should have added**: Discussion about using simple HTML/Markdown vs. GitHub Pages/external service
+- **Lessons**: Always consider how master will review progress and plan deployment strategy
+
+### Reference:
+
+- AGENTS.md line: "Always ask for guidance if unsure about how to proceed"
+
+---
+
 ## Pattern to Avoid: Acting in Burst Mode
 
 ### What I Did Wrong:
@@ -151,48 +269,3 @@
 ### Reference:
 
 - AGENTS.md line: "You don't act in burst, but rather step-by-step and stay within the master's expectation by seeking his/her approval"
-
----
-
-## Lessons Learned:
-
-1. **Always verify package versions** before specifying them
-2. **Always read official documentation** before using new framework features
-3. **Always stop and analyze** when encountering errors
-4. **Always ask for guidance** before proceeding with uncertain solutions
-5. **Always document mistakes** to avoid repeating them
-6. **Follow master's expectations** by being a servant, not a hero who tries to fix everything alone
-
-## Mistake 5: Not Following Latest Documentation for Svelte 5
-
-### What I Did Wrong:
-- Created store files with wrong extensions (`.svelte.ts` instead of `.ts`)
-- Attempted to use Svelte 5 syntax without reading official docs
-- Didn't verify package existence and latest versions on npm registry
-
-### Root Cause:
-- I was working with outdated mental models of Svelte
-- Didn't consult official documentation for Svelte 5
-- Assumed old patterns from Svelte 4
-
-### Correct Approach from Latest Docs:
-- **Store files should use `.ts` extension, not `.svelte.ts`**
-- **Use runes correctly**: `$state`, `$derived`, `$effect`, `$props` (Svelte 5 specific)
-- **Read official docs** at https://svelte.dev/docs/svelte/llms.txt before using new features
-- **Always verify** package versions on npm registry
-- **Follow framework conventions** from official documentation
-
-### Reference:
-- Svelte 5 official docs: https://svelte.dev/docs/svelte/llms.txt
-- Svelte 5 runes reference: Same documentation
-- Vite plugin svelte: Check GitHub README for proper configuration
-- AGENTS.md line: "Before writing code, consult: Vite, Svelte 5, Vite, Panda CSS"
-
-### Outcome:
-- Created files with wrong syntax that caused LSP errors
-- Need to recreate files following Svelte 5 conventions
-
----
-
-## Pattern to Avoid: Using Mental Models Instead of Documentation
-

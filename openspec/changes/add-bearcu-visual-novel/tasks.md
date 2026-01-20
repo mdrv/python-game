@@ -65,5 +65,27 @@
 
 - [ ] 8.1 Test all story flows and code exercises
 - [ ] 8.2 Validate Indonesian translations and kid-friendly language
-- [ ] 8.3 Write setup instructions and development guide
+- [ ] 8.3 Write setup instructions and development guide with deployment instructions
 - [ ] 8.4 Create deployment guide for hosting the SPA
+
+### 8.4 Deployment for Progress Tracking
+
+**Purpose:** Make project progress accessible for the master to review visually by deploying the website
+
+**Implementation:**
+
+1. Create `/progress.html` page that reads from `localStorage` and displays:
+   - Current completed tasks count
+   - Completed tasks list
+   - Overall progress percentage
+2. The TODO list is updated via `tasks.md` file which gets committed and pushed
+3. Deployed website at `https://[username].github.io/python-game/progress.html` will show latest TODO progress
+4. Master can check TODO progress without needing to clone the repository
+
+**Files to Create:**
+
+- `src/pages/progress.svelte` - Progress tracking page
+- Update `index.html` to link to progress page
+- Update documentation to explain how progress tracking works
+
+**Note:** This allows transparency of implementation progress while keeping the project private (master can check progress without cloning)
