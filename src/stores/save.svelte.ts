@@ -4,6 +4,7 @@
 
 import { getProfile, initIndexedDB, isDatabaseInitialized, saveProfile } from '$lib/indexeddb.ts'
 import type { AutoSaveStatus, KidProfile } from '$lib/indexeddb.types.ts'
+import { v4 as uuidv4 } from 'uuid'
 
 /**
  * Current kid profile state
@@ -94,7 +95,7 @@ export async function loadProfile(profileId: string): Promise<void> {
  */
 export function createProfile(name: string, age: number): KidProfile {
 	const profile: KidProfile = {
-		id: crypto.randomUUID(),
+		id: uuidv4(),
 		name,
 		age,
 		createdAt: new Date().toISOString(),

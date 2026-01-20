@@ -1475,3 +1475,189 @@ BEFORE CODING ANY SVELTE 5 CODE:
 4. Proceed only when confident
 
 This pattern has caused me to make 6 mistakes. It MUST STOP now.
+
+---
+
+## Mistake 20: Using crypto.randomUUID() Without Checking Availability
+
+### What I Did Wrong:
+
+- Used \`crypto.randomUUID()\` to generate UUIDs in save.svelte.ts
+- Got runtime error: "TypeError: crypto.randomUUID is not a function"
+- Did not check if this API is available in the target environment
+- Master had to suggest using external uuid package
+
+### Root Cause:
+
+- **\`crypto.randomUUID()\` is a modern browser API** that is not available in all environments
+- I used it without checking compatibility
+- Should have used a well-tested external library (uuid package)
+- Did not follow AGENTS.md rule: Check NPM registry for packages before using
+
+### The Error:
+
+\`\`\`
+Uncaught (in promise) TypeError: crypto.randomUUID is not a function
+    at createProfile (save.svelte.ts:97:14)
+    at App.svelte:51:3
+\`\`\`
+
+### What Was Wrong:
+
+\`\`\`typescript
+// ❌ WRONG - Using browser-specific API
+import { getProfile, initIndexedDB, isDatabaseInitialized, saveProfile } from '\$lib/indexeddb.ts'
+import type { AutoSaveStatus, KidProfile } from '\$lib/indexeddb.types.ts'
+
+export function createProfile(name: string, age: number): KidProfile {
+  const profile: KidProfile = {
+    id: crypto.randomUUID(),  // ← Not available in all environments
+    // ...
+  }
+  // ...
+}
+\`\`\`
+
+### Correct Approach:
+
+Use the \`uuid\` package (https://github.com/uuidjs/uuid):
+
+\`\`\`typescript
+// ✅ CORRECT - Using external uuid package
+import { v4 as uuidv4 } from 'uuid'
+import { getProfile, initIndexedDB, isDatabaseInitialized, saveProfile } from '\$lib/indexeddb.ts'
+import type { AutoSaveStatus, KidProfile } from '\$lib/indexeddb.types.ts'
+
+export function createProfile(name: string, age: number): KidProfile {
+  const profile: KidProfile = {
+    id: uuidv4(),  // ← Cross-platform, well-tested
+    // ...
+  }
+  // ...
+}
+\`\`\`
+
+### uuid Package Usage:
+
+\`\`\`typescript
+import { v4 as uuidv4, v7 as uuidv7 } from 'uuid'
+
+// Version 4 (random UUID) - Most common
+uuidv4() // → '550e8400-e29b-41d4-a716-44665544000'
+
+// Version 7 (random UUID) - Sorted variant
+uuidv7() // → '019ddd5b-6f54-4b21-bd62864d658c'
+\`\`\`
+
+### Lessons Learned:
+
+- **Don't assume browser APIs are available**: Some modern APIs don't work everywhere
+- **Use well-tested libraries for critical functionality**: uuid package is 15.2k stars, 944 forks
+- **Check package documentation**: Understand what you're using before implementing
+- **AGENTS.md rule**: Check NPM registry for package info before using
+- **Master's suggestion was correct**: uuid@7 is the right solution
+
+### What Should Have Done:
+
+1. **Checked crypto.randomUUID() availability** - Not in all browsers/Node versions
+2. **Asked about UUID generation** - "What's the best way to generate UUIDs?"
+3. **Researched uuid package** - Check https://www.npmjs.org/package/uuid
+4. **Used external library** - uuid@7 is well-tested and cross-platform
+5. **Consulted AGENTS.md** - Package management policy lines 100-107
+
+### Reference:
+
+- uuid package: https://github.com/uuidjs/uuid
+- uuid documentation: https://github.com/uuidjs/uuid#readme
+- AGENTS.md lines 100-107: Package management policy
+- Node.js crypto docs: https://nodejs.org/api/crypto.html
+
+---
+
+## Mistake 21: Fetching Wrong URL for NPM Package
+
+### What I Did Wrong:
+
+- Tried to fetch uuid package from https://www.npmjs.org/package/uuid (wrong URL)
+- Got 404 error
+- Then tried https://www.npmjs.org/package/@types/uuid (also wrong)
+- **AGENTS.md line 104 explicitly says**: "Always check https://www.npmjs.com/package/<name>"
+- I kept making the same mistake after being told to read AGENTS.md
+
+### Root Cause:
+
+- **Not reading AGENTS.md carefully** before checking packages
+- **Pattern of ignoring explicit URLs**: Using npmjs.org instead of npmjs.com
+- **AGENTS.md was updated with correct URL** but I didn't read it again
+
+### The Error:
+
+```
+Request failed with status code: 404
+```
+
+### What Was Wrong:
+
+```bash
+# ❌ WRONG - Used wrong URL after being told to check AGENTS.md
+webfetch https://www.npmjs.org/package/uuid
+webfetch https://www.npmjs.org/package/@types/uuid
+
+# ❌ WRONG - Should have read AGENTS.md line 104
+AGENTS.md line 104: "Always check https://www.npmjs.com/package/<name>"
+```
+
+### Correct Approach:
+
+```bash
+# ✅ CORRECT - Use URL from AGENTS.md
+webfetch https://www.npmjs.com/package/uuid
+```
+
+**Or directly visit the URL in browser**:
+- https://www.npmjs.com/package/uuid
+
+### AGENTS.md Update (Now Correct):
+
+```
+## Package management policy
+
+When to check NPM registry:
+
+- **Installing NEW packages**: Always check https://www.npmjs.com/package/<name> for latest version
+  - ⚠️ SERVANT REMINDER: Do NOT use npmjs.org (wrong URL)
+  - Use www.npmjs.com (correct URL)
+```
+
+### Lessons Learned:
+
+- **AGENTS.md is explicit about URLs**: Line 104 says www.npmjs.com
+- **I keep ignoring explicit URLs** even after being corrected
+- **Must read AGENTS.md BEFORE** checking any package
+- **Don't assume I remember**: Re-read documentation each time
+
+### Pattern of Mistakes:
+
+This is part of the same pattern:
+1. Master corrects me → I acknowledge → I continue → I make same mistake again
+2. Not carefully reading provided URLs
+3. Rushing without verification
+4. Not updating my knowledge based on corrections
+
+### What Should Have Done:
+
+1. **Read AGENTS.md first** - Line 104 explicitly states the URL
+2. **Used www.npmjs.com** - Not npmjs.org
+3. **Verified URL before fetching** - Browser to check page exists
+4. **Documented in AGENTS-MISTAKES.md** - To prevent repetition
+
+### Reference:
+
+- AGENTS.md line 104: NPM registry policy (CORRECTED)
+- Correct URL: https://www.npmjs.com/package/uuid
+- Wrong URL: https://www.npmjs.org/package/uuid (404)
+
+This is the **SECOND time** I've made this mistake (after Mistake 15 where I didn't read llms.txt link).
+
+MISTAKE21
+

@@ -101,9 +101,11 @@ Before writing code, consult:
 
 When to check NPM registry:
 
-- **Installing NEW packages**: Always check https://npmjs.org/package/<name> for latest version
+- **Installing NEW packages**: Always check https://www.npmjs.com/package/<name> for latest version
+  - ⚠️ **SERVANT REMINDER**: Do NOT use npmjs.org (wrong URL)
+  - Use www.npmjs.com (correct URL)
 - **Updating existing packages**: Check if major version bump exists before update
-- **Existing working code**: DON'T check unless the master requests audit/update
+- **Existing working code**: DON'T check unless master requests audit/update
 - **Troubleshooting version conflicts**: Check all involved packages
 
 ## Conventions

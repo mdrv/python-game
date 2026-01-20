@@ -44,23 +44,39 @@
 
 	// Initialize app on mount
 	onMount(async () => {
-		// Initialize save system
-		await initSaveSystem()
+		console.log('App mounting...')
 
-		// Create a default profile if none exists
-		createProfile('Anonim', 8)
+		try {
+			// Initialize save system
+			await initSaveSystem()
 
-		// Load Chapter 1 data into store
-		chapters.set(1, chapter1)
+			console.log('Save system initialized')
 
-		// Load first scene of chapter 1
-		loadChapter(1)
-		if (chapter1.scenes.length > 0) {
-			loadScene(chapter1.scenes[0].id, chapter1.scenes)
+			// Create a default profile if none exists
+			createProfile('Anonim', 8)
+
+			console.log('Profile created')
+
+			// Load Chapter 1 data into store
+			chapters.set(1, chapter1)
+
+			console.log('Chapter 1 loaded')
+
+			// Load first scene of chapter 1
+			loadChapter(1)
+			if (chapter1.scenes.length > 0) {
+				loadScene(chapter1.scenes[0].id, chapter1.scenes)
+			}
+
+			console.log('Scene loaded')
+
+			// Set app as ready
+			appReady = true
+
+			console.log('App ready:', appReady)
+		} catch (error) {
+			console.error('Error during app initialization:', error)
 		}
-
-		// Set app as ready
-		appReady = true
 	})
 
 	// Handle next dialogue
