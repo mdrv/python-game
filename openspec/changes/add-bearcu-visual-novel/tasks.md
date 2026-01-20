@@ -1,0 +1,69 @@
+# Tasks
+
+## 1. Project Setup and Infrastructure
+
+- [ ] 1.1 Initialize Vite + Svelte TypeScript project with required dependencies
+- [ ] 1.2 Configure Panda CSS for styling
+- [ ] 1.3 Set up project structure (components, stores, pages, assets)
+- [ ] 1.4 Configure build and development scripts
+- [ ] 1.5 Set up IndexedDB wrapper library and initialization
+
+## 2. Visual Novel Engine
+
+- [ ] 2.1 Create dialogue data structure and type definitions
+- [ ] 2.2 Implement scene management system
+- [ ] 2.3 Build dialogue display component with typing effect
+- [ ] 2.4 Create character display component with expression changes
+- [ ] 2.5 Implement choice/branching system for story decisions
+- [ ] 2.6 Add state management for story progress
+- [ ] 2.7 Implement IndexedDB auto-save system with debouncing
+- [ ] 2.8 Create save/load progress functionality
+- [ ] 2.9 Build UI indicators for auto-save status
+
+## 3. Bearcu Character Assets and Components
+
+- [ ] 3.1 Create Bearcu character SVG/placeholder graphics with expressions
+- [ ] 3.2 Implement character component with animation support
+- [ ] 3.3 Add expression states (happy, thinking, excited, confused)
+- [ ] 3.4 Design simple animations for character interactions
+
+## 4. Python Learning Modules
+
+- [ ] 4.1 Define Python learning progression (variables → loops → functions)
+- [ ] 4.2 Create code editor component (syntax highlighting for kids)
+- [ ] 4.3 Implement code execution engine (browser-based or simplified)
+- [ ] 4.4 Build feedback system for code exercises
+- [ ] 4.5 Create hint system for stuck learners
+- [ ] 4.6 Design achievement/badge system for motivation
+
+## 5. Indonesian Content and Localization
+
+- [ ] 5.1 Write initial story chapters in Indonesian
+- [ ] 5.2 Translate Python concepts and explanations to Indonesian
+- [ ] 5.3 Create Indonesian code examples and comments
+- [ ] 5.4 Build UI components with Indonesian text
+- [ ] 5.5 Add support for future language expansion (i18n structure)
+
+## 6. Story Integration
+
+- [ ] 6.1 Design story structure combining narrative + coding challenges
+- [ ] 6.2 Create Chapter 1: Introduction (Meet Bearcu, Hello World)
+- [ ] 6.3 Create Chapter 2: Variables and Numbers (Bearcu's favorite foods)
+- [ ] 6.4 Create Chapter 3: Loops (Counting honey pots)
+- [ ] 6.5 Implement story progression and saving/loading progress
+
+## 7. UI and Polish
+
+- [ ] 7.1 Design kid-friendly, colorful UI theme
+- [ ] 7.2 Create main menu and chapter selection screen
+- [ ] 7.3 Build progress tracking and chapter completion screens
+- [ ] 7.4 Add sound effects and background music support
+- [ ] 7.5 Implement responsive design for different screen sizes
+- [ ] 7.6 Add keyboard shortcuts and accessibility features
+
+## 8. Testing and Documentation
+
+- [ ] 8.1 Test all story flows and code exercises
+- [ ] 8.2 Validate Indonesian translations and kid-friendly language
+- [ ] 8.3 Write setup instructions and development guide
+- [ ] 8.4 Create deployment guide for hosting the SPA
