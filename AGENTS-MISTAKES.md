@@ -697,3 +697,90 @@ styled-system/
 - Vite import resolution error
 - Panda CSS codegen bug (Mistake 10) - styles.css not generated
 - AGENTS.md: "ALWAYS verify" pattern (multiple occurrences)
+
+---
+
+## Mistake 14: Not Understanding Panda CSS PostCSS Integration Pattern
+
+### What I Did Wrong:
+
+- Tried multiple incorrect approaches to set up Panda CSS:
+  1. Used `@pandacss/vite-plugin` (package doesn't exist)
+  2. Tried to import `./styled-system/styles.css` directly in main.ts
+  3. Didn't understand the layer directive pattern
+- Made incremental fixes without understanding the correct overall pattern
+- Each fix was "patching" not understanding the proper setup
+
+### Root Cause:
+
+- **Didn't thoroughly read Panda CSS PostCSS installation guide**
+- Focused on individual errors instead of understanding the complete pattern
+- Tried to "guess" correct approach instead of following documentation
+- Didn't understand that `styled-system/` is GENERATED output, not something we import directly
+
+### The Correct Pattern (from Documentation):
+
+Panda CSS PostCSS integration with Vite works like this:
+
+```
+1. Add @layer directive to YOUR OWN CSS file (e.g., src/style.css)
+   @layer reset, base, tokens, recipes, utilities;
+
+2. PostCSS processes your CSS file
+   ↓
+3. PostCSS plugin (@pandacss/dev/postcss) generates styled-system
+   ↓
+4. PostCSS automatically includes generated styled-system CSS
+   ↓
+5. Vite bundles everything together
+```
+
+### What I Should Have Done:
+
+1. **READ complete PostCSS installation guide** first
+2. Follow the exact pattern from documentation:
+   ```bash
+   bun install -D @pandacss/dev postcss
+   bun panda init -p
+   ```
+3. Add `@layer` directive to `src/style.css` (NOT import styled-system)
+4. Trust that PostCSS plugin handles generated CSS automatically
+
+### The Pattern of Mistakes:
+
+This is part of larger pattern:
+
+- **Trying to fix errors incrementally** instead of understanding root pattern
+- **Patching individual issues** (wrong package, wrong import) without understanding overall approach
+- **Not reading complete documentation** before implementation
+- **Making assumptions** about how tools work instead of verifying with docs
+
+### Key Insight:
+
+> "The generated `styled-system` directory and its CSS file is an implementation detail.
+> You NEVER import it directly. PostCSS plugin handles it automatically."
+>
+> - Panda CSS Documentation
+
+### Lessons Learned:
+
+- **Understand the pattern, not just fix errors**: Read complete documentation, follow exact steps
+- **Generated files are implementation details**: Don't import generated files directly
+- **PostCSS plugin handles integration**: Trust the tool to do its job
+- **Layer directive is the key**: That's how we activate Panda CSS in our CSS
+- **Don't guess, verify**: If uncertain, read documentation completely
+
+### Related Mistakes:
+
+This connects to multiple previous mistakes:
+
+- Mistake 2: Not checking official docs before implementation
+- Mistake 5: Not following latest documentation patterns
+- Mistake 8: Not checking AGENTS.md llms.txt links
+- Mistake 13: Importing non-existent file (same root cause)
+
+### Reference:
+
+- Panda CSS PostCSS installation guide: https://panda-css.com/llms.txt/installation
+- Pattern is consistent across ALL frameworks (Next.js, Svelte, Vite, etc.)
+- AGENTS.md line 81: "Panda CSS: https://panda-css.com/llms.txt"
