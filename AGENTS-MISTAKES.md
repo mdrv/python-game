@@ -565,3 +565,54 @@ When working with package.json after any scaffolding:
 - ✅ Vite scaffolded package.json → Need script aliases (Mistake 11)
 - ✅ Vite scaffolded tsconfig.json → Need path aliases (previous work)
 - ✅ Svelte scaffolded files → Need Svelte 5 runes (Mistake 2, 5)
+
+---
+
+## Mistake 12: Wrong Import in panda.config.ts
+
+### What I Did Wrong:
+
+- Imported `defineConfig` from `@pandacss/core`
+- Correct import should be from `@pandacss/dev`
+- Master had to point out this definite error
+
+### Root Cause:
+
+- Didn't verify import statement from Panda CSS documentation
+- Assumed `defineConfig` would be in `@pandacss/core` (logical but incorrect)
+- Did not double-check Panda CSS installation guide that I fetched earlier
+
+### Correct Approach:
+
+- **Verify imports from official documentation**
+- Panda CSS examples consistently use: `import { defineConfig } from '@pandacss/dev'`
+- `@pandacss/core` exists but contains internal functions, not defineConfig
+- When creating config file, reference documentation for correct imports
+
+### What Should Have Verified:
+
+From Panda CSS installation guide (fetched earlier):
+
+```js
+import { defineConfig } from '@pandacss/dev'
+```
+
+This pattern is consistent across all framework examples:
+
+- Using Vite
+- Using Svelte
+- Using PostCSS
+- CLI mode
+
+### Lessons Learned:
+
+- **Package names can be misleading**: `@pandacss/core` sounds like it would have `defineConfig` but it doesn't
+- **Always verify imports**: Even if it "seems logical," check documentation
+- **Documentation consistency**: All Panda CSS docs use `@pandacss/dev` for `defineConfig`
+- **Review fetched docs**: I had already fetched the correct guide but didn't reference it
+
+### Reference:
+
+- Panda CSS installation guide: https://panda-css.com/llms.txt/installation
+- @pandacss/dev package: Contains CLI and config utilities
+- @pandacss/core package: Internal functions (not for config creation)
