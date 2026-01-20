@@ -7,7 +7,9 @@
 		dialogue: DialogueNode | null
 		onNext?: () => void
 		onChoice?: (choiceId: string, nextSceneId: string) => void
-		onCodeSubmit?: (code: string) => void
+		onCodeSubmit?: (
+			code: string,
+		) => { success: boolean; message?: string; output?: string[] }
 	}
 
 	let { dialogue, onNext, onChoice, onCodeSubmit }: Props = $props()
@@ -15,11 +17,19 @@
 	// Local state for code editor
 	let code = $state('')
 	let showHints = $state(false)
+	let codeFeedback = $state<
+		{
+			success: boolean
+			message?: string
+			output?: string[]
+		} | null
+	>(null)
 
 	// Reset code when dialogue changes
 	$effect(() => {
 		if (dialogue?.codeChallenge?.starterCode) {
 			code = dialogue.codeChallenge.starterCode
+			codeFeedback = null
 		}
 	})
 
@@ -43,7 +53,8 @@
 	// Handle code submission
 	function handleSubmitCode(): void {
 		if (onCodeSubmit && dialogue?.codeChallenge) {
-			onCodeSubmit(code)
+			const result = onCodeSubmit(code)
+			codeFeedback = result
 		}
 	}
 </script>
@@ -109,6 +120,26 @@
 						{t('runCode')}
 					</button>
 				</div>
+				{#if codeFeedback}
+					<div
+						class='code-feedback'
+						class:success={codeFeedback.success}
+						class:error={!codeFeedback.success}
+					>
+						{
+							codeFeedback.message
+							|| (codeFeedback.success ? 'Benar!' : 'Salah, coba lagi!')
+						}
+					</div>
+				{/if}
+				{#if codeFeedback?.output && codeFeedback.output.length > 0}
+					<div class='code-output'>
+						<div class='output-label'>Output:</div>
+						{#each codeFeedback.output as line}
+							<div class='output-line'>{line}</div>
+						{/each}
+					</div>
+				{/if}
 				{#if showHints && dialogue.codeChallenge.hints.length > 0}
 					<div class='hints'>
 						<h4>{t('hint')}</h4>
@@ -135,6 +166,8 @@
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 		max-width: 800px;
 		width: 100%;
+		max-height: 85vh; /* Limit height to 85% of viewport */
+		overflow-y: auto; /* Allow scrolling if content is too tall */
 	}
 
 	.speaker-name {
@@ -217,6 +250,8 @@
 		font-family: 'Courier New', monospace;
 		font-size: 0.9375rem;
 		resize: vertical;
+		min-height: 120px; /* Minimum height for code editor */
+		max-height: 300px; /* Maximum height to prevent it from being too tall */
 	}
 
 	.code-input:focus {
@@ -227,6 +262,61 @@
 	.code-actions {
 		display: flex;
 		gap: 0.75rem;
+	}
+
+	.code-feedback {
+		padding: 1rem;
+		border-radius: 0.5rem;
+		font-weight: bold;
+		font-size: 1rem;
+		margin-top: 0.5rem;
+		text-align: center;
+		animation: fadeIn 0.3s ease-in;
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+			transform: translateY(-10px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.code-feedback.success {
+		background: #d4edda;
+		color: #155724;
+		border: 2px solid #155724;
+	}
+
+	.code-feedback.error {
+		background: #f8d7da;
+		color: #721c24;
+		border: 2px solid #721c24;
+	}
+
+	.code-output {
+		margin-top: 1rem;
+		padding: 1rem;
+		background: #f0f0f0;
+		border: 2px solid #ddd;
+		border-radius: 0.5rem;
+		font-family: 'Courier New', monospace;
+		font-size: 0.9375rem;
+	}
+
+	.output-label {
+		font-weight: bold;
+		color: #555;
+		margin-bottom: 0.5rem;
+	}
+
+	.output-line {
+		padding: 0.25rem 0;
+		color: #333;
+		line-height: 1.5;
 	}
 
 	.hint-button,

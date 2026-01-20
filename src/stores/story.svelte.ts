@@ -2,7 +2,7 @@
 // Uses Svelte 5 runes for reactive state management
 // Reference: https://svelte.dev/docs/svelte/runes
 
-import type { DialogueNode, Scene, StoryState } from '$lib/vn.types.ts'
+import type { Chapter, DialogueNode, Scene, StoryState } from '$lib/vn.types.ts'
 
 // Current story state
 let storyState = $state<StoryState>({
@@ -42,6 +42,13 @@ export const getIsChapterComplete = () => isChapterComplete
 export const getActiveChapter = () => activeChapter
 
 /**
+ * Set chapter data into store
+ */
+export function setChapter(chapterId: number, chapter: Chapter): void {
+	chapters.set(chapterId, chapter)
+}
+
+/**
  * Load chapter data into store
  */
 export function loadChapter(chapterId: number): void {
@@ -78,9 +85,21 @@ export function loadDialogue(index: number): void {
  * Advance to next dialogue
  */
 export function nextDialogue(): void {
-	if (currentScene && storyState.currentDialogueIndex < currentScene.dialogues.length - 1) {
+	if (!currentScene) {
+		return
+	}
+
+	// Check if there are more dialogues in current scene
+	if (storyState.currentDialogueIndex < currentScene.dialogues.length - 1) {
 		loadDialogue(storyState.currentDialogueIndex + 1)
-	} else if (currentScene?.isEndOfChapter) {
+	} // Check if current dialogue has nextSceneId (scene transition)
+	else if (currentDialogue?.nextSceneId) {
+		const chapterData = chapters.get(storyState.currentChapter)
+		if (chapterData) {
+			loadScene(currentDialogue.nextSceneId, chapterData.scenes)
+		}
+	} // Check if end of chapter
+	else if (currentScene.isEndOfChapter) {
 		completeChapter()
 	}
 }

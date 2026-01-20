@@ -6,7 +6,7 @@ export type Language = 'id' | 'en' | 'ja'
 
 export interface Translation {
 	ui: Record<string, string>
-	story: Record<string, Record<string, string>>
+	story: Record<string, string>
 }
 
 // Indonesian translations

@@ -36,6 +36,7 @@ export interface CodeChallenge {
 	description: string
 	starterCode: string
 	expectedOutput?: string | string[]
+	allowAnyOutput?: boolean // If true, any non-empty output is accepted (useful for name challenges)
 	hints: string[]
 	maxAttempts?: number
 }

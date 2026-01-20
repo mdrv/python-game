@@ -4,6 +4,7 @@
 
 import { getProfile, initIndexedDB, isDatabaseInitialized, saveProfile } from '$lib/indexeddb.ts'
 import type { AutoSaveStatus, KidProfile } from '$lib/indexeddb.types.ts'
+import type { StoryState } from '$lib/vn.types.ts'
 import { v4 as uuidv4 } from 'uuid'
 
 /**
@@ -105,7 +106,7 @@ export function createProfile(name: string, age: number): KidProfile {
 			currentScene: '',
 			currentDialogueIndex: 0,
 			completedChapters: [],
-			changes: {},
+			choices: {},
 			codeSubmissions: {},
 		},
 		achievements: [],
@@ -136,7 +137,7 @@ export function updateProfile(updates: Partial<KidProfile>): void {
 /**
  * Update story progress
  */
-export function updateStoryProgress(storyUpdates: Partial<typeof currentProfile.story>): void {
+export function updateStoryProgress(storyUpdates: Partial<StoryState>): void {
 	if (!currentProfile) {
 		console.warn('Cannot update story: no profile loaded')
 		return
@@ -186,6 +187,14 @@ function triggerAutoSave(): void {
 }
 
 /**
+ * Convert Svelte reactive state to plain JavaScript object
+ * This removes all Svelte proxies so the object can be cloned by IndexedDB
+ */
+function toPlainObject<T>(obj: T): T {
+	return JSON.parse(JSON.stringify(obj))
+}
+
+/**
  * Perform actual save
  */
 async function performAutoSave(): Promise<void> {
@@ -196,7 +205,9 @@ async function performAutoSave(): Promise<void> {
 	autoSaveStatus = 'saving'
 
 	try {
-		const result = await saveProfile(currentProfile)
+		// Convert reactive profile to plain object (removes Svelte proxies)
+		const plainProfile = toPlainObject(currentProfile)
+		const result = await saveProfile(plainProfile)
 		if (result.success) {
 			autoSaveStatus = 'success'
 			// Reset to idle after showing success

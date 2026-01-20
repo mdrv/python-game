@@ -19,6 +19,7 @@
 		loadScene,
 		nextDialogue,
 		recordChoice,
+		setChapter,
 	} from '$stores/story.svelte.ts'
 	import { chapter1 } from '$stories/chapter1.ts'
 	import { onMount } from 'svelte'
@@ -27,11 +28,11 @@
 	let appReady = $state(false)
 	let showChoiceMenu = $state(false)
 
-	// Get store values
-	let chapters = getChapters()
-	let currentScene = getCurrentScene()
-	let currentDialogue = getCurrentDialogue()
-	let currentProfile = getCurrentProfile()
+	// Get store values - use $derived for reactivity
+	let chapters = $derived(getChapters())
+	let currentScene = $derived(getCurrentScene())
+	let currentDialogue = $derived(getCurrentDialogue())
+	let currentProfile = $derived(getCurrentProfile())
 
 	// Start/stop periodic auto-save when profile changes
 	$effect(() => {
@@ -44,23 +45,15 @@
 
 	// Initialize app on mount
 	onMount(async () => {
-		console.log('App mounting...')
-
 		try {
 			// Initialize save system
 			await initSaveSystem()
 
-			console.log('Save system initialized')
-
 			// Create a default profile if none exists
 			createProfile('Anonim', 8)
 
-			console.log('Profile created')
-
 			// Load Chapter 1 data into store
-			chapters.set(1, chapter1)
-
-			console.log('Chapter 1 loaded')
+			setChapter(1, chapter1)
 
 			// Load first scene of chapter 1
 			loadChapter(1)
@@ -68,12 +61,8 @@
 				loadScene(chapter1.scenes[0].id, chapter1.scenes)
 			}
 
-			console.log('Scene loaded')
-
 			// Set app as ready
 			appReady = true
-
-			console.log('App ready:', appReady)
 		} catch (error) {
 			console.error('Error during app initialization:', error)
 		}
@@ -111,11 +100,59 @@
 	}
 
 	// Handle code submission
-	function handleCodeSubmit(code: string): void {
-		console.log('Code submitted:', code)
-		// Would validate code here
-		// For now, just advance to next dialogue
-		handleNextDialogue()
+	function handleCodeSubmit(
+		code: string,
+	): { success: boolean; message?: string; output?: string[] } {
+		if (!currentDialogue?.codeChallenge) {
+			return { success: false, message: 'Tidak ada tantangan kode' }
+		}
+
+		const challenge = currentDialogue.codeChallenge
+
+		// Extract print() statements from code
+		const printMatches = code.match(/print\s*\(\s*"([^"]*?)"\s*\)/g) || []
+
+		// Get the values being printed
+		const outputs = printMatches.map((match) => {
+			const contentMatch = match.match(/print\s*\(\s*"([^"]*?)"\s*\)/)
+			return contentMatch ? contentMatch[1] : ''
+		})
+
+		let isValid = false
+
+		// Check if allowAnyOutput is set (for name challenges)
+		if (challenge.allowAnyOutput) {
+			// Accept any non-empty output
+			isValid = outputs.some((output) => output.trim().length > 0)
+		} else if (Array.isArray(challenge.expectedOutput)) {
+			// Check if outputs match expected array
+			isValid = outputs.length === challenge.expectedOutput.length
+				&& outputs.every((output, index) =>
+					output === challenge.expectedOutput![index]
+				)
+		} else if (typeof challenge.expectedOutput === 'string') {
+			// Check if outputs match expected string
+			isValid = outputs.includes(challenge.expectedOutput)
+		}
+
+		if (isValid) {
+			// Show success message and advance
+			setTimeout(() => {
+				handleNextDialogue()
+			}, 1000) // Wait 1 second to show success message
+			return {
+				success: true,
+				message: 'Benar! Kode berhasil dijalankan.',
+				output: outputs,
+			}
+		} else {
+			// Show error message
+			return {
+				success: false,
+				message: 'Salah! Coba lagi atau periksa petunjuk.',
+				output: outputs,
+			}
+		}
 	}
 </script>
 
@@ -176,7 +213,7 @@
 	.app {
 		width: 100vw;
 		height: 100vh;
-		overflow: hidden;
+		overflow: auto; /* Changed from hidden to auto for scrolling */
 		display: flex;
 		flex-direction: column;
 	}
@@ -186,24 +223,28 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		justify-content: center;
+		justify-content: flex-start; /* Changed from center to flex-start */
 		padding: 2rem;
+		padding-bottom: 4rem; /* Extra padding at bottom for buttons */
 		gap: 2rem;
 		position: relative;
+		min-height: 100vh; /* Ensure it can grow taller than viewport */
 	}
 
 	.character-area {
-		flex: 1;
+		flex-shrink: 0; /* Prevent character from shrinking */
 		display: flex;
 		align-items: flex-end;
 		justify-content: center;
 		width: 100%;
+		max-height: 350px; /* Limit character height */
 	}
 
 	.dialogue-area {
 		width: 100%;
 		max-width: 800px;
 		z-index: 10;
+		flex-shrink: 0; /* Prevent dialogue from being cut off */
 	}
 
 	.choice-overlay {
