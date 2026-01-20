@@ -5,9 +5,15 @@
 	"type": "module",
 	"scripts": {
 		"prepare": "panda codegen",
+		"pr": "panda codegen",
 		"dev": "vite",
+		"d": "vite",
 		"build": "panda codegen && tsc && vite build",
-		"preview": "vite preview"
+		"b": "panda codegen && tsc && vite build",
+		"start": "vite",
+		"s": "vite",
+		"preview": "vite preview",
+		"p": "vite preview"
 	},
 	"devDependencies": {
 		"@pandacss/dev": "^1.8.1",
