@@ -5,7 +5,10 @@
 	import DialogueBox from '$components/DialogueBox.svelte'
 	import {
 		createProfile,
+		getCurrentProfile,
 		initSaveSystem,
+		startPeriodicAutoSave,
+		stopPeriodicAutoSave,
 		updateStoryProgress,
 	} from '$stores/save.svelte.ts'
 	import {
@@ -28,6 +31,16 @@
 	let chapters = getChapters()
 	let currentScene = getCurrentScene()
 	let currentDialogue = getCurrentDialogue()
+	let currentProfile = getCurrentProfile()
+
+	// Start/stop periodic auto-save when profile changes
+	$effect(() => {
+		if (currentProfile) {
+			startPeriodicAutoSave()
+		} else {
+			stopPeriodicAutoSave()
+		}
+	})
 
 	// Initialize app on mount
 	onMount(async () => {

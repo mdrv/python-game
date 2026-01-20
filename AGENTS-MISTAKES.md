@@ -1017,6 +1017,134 @@ import { chapter1 } from '$stories/chapter1.ts'
 
 ---
 
+## Mistake 19: Using $effect at Top Level of .svelte.ts File
+
+### What I Did Wrong:
+
+- Used `$effect` at the top level of `save.svelte.ts` store file
+- Got runtime error: "Uncaught Svelte error: effect_orphan"
+- Error message: "`$effect` can only be used inside an effect (e.g. during component initialisation)"
+
+### Root Cause:
+
+- **`$effect` can only be used during component initialization** or while a parent effect is running
+- **`.svelte.ts` files are modules, not components** - they don't have an initialization phase
+- I treated the store file like a component, using `$effect` at module level
+
+### The Error:
+
+```
+Uncaught Svelte error: effect_orphan
+`$effect` can only be used inside an effect (e.g. during component initialisation)
+https://svelte.dev/e/effect_orphan
+    at http://192.168.100.41:5173/src/stores/save.svelte.ts:245:3
+```
+
+### What Was Wrong:
+
+```typescript
+// ❌ WRONG - $effect at top level of .svelte.ts module
+// File: src/stores/save.svelte.ts
+
+let currentProfile = $state<KidProfile | null>(null)
+
+// ... other code ...
+
+// Initialize auto-save interval when a profile is loaded
+$effect(() => {
+	if (currentProfile) {
+		startPeriodicAutoSave()
+	} else {
+		stopPeriodicAutoSave()
+	}
+})
+```
+
+### Correct Approach:
+
+**Move reactive logic to components that use the store:**
+
+```typescript
+// ✅ CORRECT - Provide functions, components handle reactivity
+// File: src/stores/save.svelte.ts
+
+let currentProfile = $state<KidProfile | null>(null)
+
+export const getCurrentProfile = () => currentProfile
+export function startPeriodicAutoSave(): void { ... }
+export function stopPeriodicAutoSave(): void { ... }
+// NO $effect here!
+```
+
+```svelte
+<!-- ✅ CORRECT - Component uses $effect -->
+<!-- File: src/App.svelte -->
+
+<script>
+	import {
+		getCurrentProfile,
+		startPeriodicAutoSave,
+		stopPeriodicAutoSave,
+	} from '$stores/save.svelte.ts'
+
+	let currentProfile = getCurrentProfile()
+
+	// Start/stop periodic auto-save when profile changes
+	$effect(() => {
+		if (currentProfile) {
+			startPeriodicAutoSave()
+		} else {
+			stopPeriodicAutoSave()
+		}
+	})
+</script>
+```
+
+### Key Insight from Svelte 5 Documentation:
+
+> **`$effect` can only be used inside an effect (e.g. during component initialization)**
+>
+> You can use `$effect` anywhere, not just at the top level of a component,
+> as long as it is called while a parent effect is running.
+>
+> — Svelte 5 Documentation
+
+### The Pattern:
+
+**Store files (`.svelte.ts`):**
+
+- Provide reactive state via `$state` (private, with getter functions)
+- Export functions to modify state
+- Export getters to access state
+- **DO NOT use `$effect` at module level**
+
+**Component files (`.svelte`):**
+
+- Use `$effect` to react to store state changes
+- Call store functions as needed
+- This is where side effects like intervals/timeouts belong
+
+### Lessons Learned:
+
+- **`.svelte.ts` files are NOT components**: They don't have initialization phases
+- **`$effect` is component-only**: Can only be used during component initialization
+- **Move side effects to components**: Store provides state, components handle effects
+- **Svelte 5 docs are clear**: "`$effect` can only be used inside an effect"
+
+### What Should Have Done:
+
+1. **Read Svelte 5 docs** about `$effect` usage in `.svelte.ts` files
+2. **Understood store pattern**: Stores provide state, components handle reactivity
+3. **Moved `$effect` to component**: Let App.svelte handle auto-save timing
+
+### Reference:
+
+- Svelte 5 documentation: https://svelte.dev/docs/svelte/llms.txt
+- Svelte error guide: https://svelte.dev/e/effect_orphan
+- AGENTS.md lines 119-127: File Naming Conventions
+
+---
+
 ## Mistake 15: Using Old Svelte Event Handler Syntax
 
 ### What I Did Wrong:

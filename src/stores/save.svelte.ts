@@ -278,12 +278,3 @@ export function clearProfile(): void {
 	currentProfile = null
 	stopPeriodicAutoSave()
 }
-
-// Initialize auto-save interval when a profile is loaded
-$effect(() => {
-	if (currentProfile) {
-		startPeriodicAutoSave()
-	} else {
-		stopPeriodicAutoSave()
-	}
-})
