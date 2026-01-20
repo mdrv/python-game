@@ -1,11 +1,14 @@
 <script lang='ts'>
 	import { t } from '$stores/i18n'
-	import { isSaving, lastSavedAt } from '$stores/save'
+	import { autoSaveStatus, currentProfile } from '$stores/save'
 
-	let autoSaveVisible = $derived(false)
+	let autoSaveVisible = $state(false)
 
 	$effect(() => {
-		if (isSaving) {
+		if (
+			autoSaveStatus === 'saving' || autoSaveStatus === 'success'
+			|| autoSaveStatus === 'error'
+		) {
 			autoSaveVisible = true
 			setTimeout(() => {
 				autoSaveVisible = false
@@ -13,17 +16,47 @@
 		}
 	})
 
-	function formatLastSaved(timestamp: number | null): string {
-		if (!timestamp) return t('never')
+	function formatLastSaved(timestamp: string | null): string {
+		if (!timestamp) return 'belum pernah'
 		const now = Date.now()
-		const diff = now - timestamp
-		const minutes = Math.floor(diff / 60000)
-		if (minutes < 1) return 'baru saja'
+		const lastSaved = new Date(timestamp).getTime()
+		const diff = now - lastSaved
+		const seconds = Math.floor(diff / 1000)
+		const minutes = Math.floor(seconds / 60)
+		if (seconds < 60) return 'baru saja'
 		if (minutes < 60) return `${minutes} menit yang lalu`
 		const hours = Math.floor(minutes / 60)
 		if (hours < 24) return `${hours} jam yang lalu`
 		return `${Math.floor(hours / 24)} hari yang lalu`
 	}
+
+	let statusText = $derived(() => {
+		switch (autoSaveStatus) {
+			case 'saving':
+				return t('saving')
+			case 'success':
+				return t('saved')
+			case 'error':
+				return 'Gagal menyimpan'
+			case 'pending':
+				return 'Menunggu...'
+			default:
+				return t('saved')
+		}
+	})
+
+	let statusColor = $derived(() => {
+		switch (autoSaveStatus) {
+			case 'saving':
+				return 'text-blue-600'
+			case 'success':
+				return 'text-green-600'
+			case 'error':
+				return 'text-red-600'
+			default:
+				return 'text-gray-600'
+		}
+	})
 </script>
 
 {#if autoSaveVisible}
@@ -45,11 +78,10 @@
 				d='M19 21H5a2 2 0 0 0-2V5a2 2 0 0 2 2v14a2 2 0 0 2 2z'
 			/>
 		</svg>
-		<span class='text-gray-600'>
-			{#if isSaving}
-				{t('saving')}
-			{:else}
-				{t('saved')} ({formatLastSaved(lastSavedAt)})
+		<span class={statusColor}>
+			{statusText}
+			{#if currentProfile?.lastPlayedAt}
+				({formatLastSaved(currentProfile.lastPlayedAt)})
 			{/if}
 		</span>
 	</div>

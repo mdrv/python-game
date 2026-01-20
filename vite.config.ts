@@ -1,5 +1,6 @@
 import pandaCss from '@pandacss/vite-plugin'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
+import path from 'path'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
@@ -7,6 +8,12 @@ export default defineConfig({
 		svelte(),
 		pandaCss(),
 	],
+	resolve: {
+		alias: {
+			'$lib': path.resolve(__dirname, './src/lib'),
+			'$stores': path.resolve(__dirname, './src/stores'),
+		},
+	},
 	server: {
 		port: 5173,
 		open: false,
