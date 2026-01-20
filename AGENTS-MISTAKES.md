@@ -1269,3 +1269,209 @@ Result: No matches found (only CSS properties like `animation:`, `transition:`)
 - Svelte 5 documentation: https://svelte.dev/docs/svelte/llms.txt
 - Svelte error guide: https://svelte.dev/e/mixed_event_handler_syntaxes
 - Svelte migration guide: Event handler syntax changes
+echo "
+
+---
+
+## Pattern of Mistakes: Not Reading Documentation Before Coding
+
+### What I Keep Doing Wrong:
+
+I repeatedly make Svelte 5 coding mistakes because I **DO NOT follow this workflow**:
+
+1. ❌ Start coding immediately based on assumptions
+2. ❌ Guess syntax without reading documentation
+3. ❌ Make errors, get corrected, move to next thing
+4. ❌ Repeat of same pattern
+
+### What I Should Be Doing:
+
+1. ✅ **FIRST: Read AGENTS.md** - Understand project conventions
+2. ✅ **SECOND: Read Svelte 5 llms.txt** - Understand syntax and patterns
+3. ✅ **THIRD: Code based on documentation** - Not assumptions
+4. ✅ **FOURTH: Verify** - Test and confirm with master
+
+### All Svelte 5 Mistakes I Made:
+
+1. **Mistake 5** - Wrong about .svelte.ts vs .ts extensions
+   - Initially said stores should use .ts (WRONG)
+   - Corrected to: stores MUST use .svelte.ts
+   - Root cause: Didn't read Svelte docs about .svelte.ts files
+
+2. **Mistake 15** - Used old 'on:click' syntax
+   - AVOID 'on:click', use 'onclick' (Svelte 5)
+   - Root cause: AGENTS.md line 126 explicitly forbids 'on:click', I didn't read it
+
+3. **Mistake 16** - Imported runes in .svelte.ts files
+   - Tried to import '\$state', '\$derived', '\$effect' from 'svelte/reactivity'
+   - Runes are GLOBAL in .svelte.ts files
+   - Root cause: Didn't read Svelte docs about .svelte.ts file rules
+
+4. **Mistake 17** - Exported state directly from .svelte.ts
+   - Tried 'export let currentProfile = \$state(...)'
+   - Must export getter functions: 'export const getCurrentProfile = () => currentProfile'
+   - Root cause: Didn't read Svelte docs about state export restrictions
+
+5. **Mistake 18** - Missing full file extensions in imports
+   - Used 'import from \"\$lib/vn.types\"' (missing .ts)
+   - Master explicitly told me to use full extensions
+   - Root cause: Didn't read AGENTS.md line 138 (full extensions required)
+
+6. **Mistake 19** - Used \$effect at top level of .svelte.ts
+   - Put '\$effect(() => { ... })' in store file (module level)
+   - '\$effect' only works during component initialization
+   - Root cause: Didn't read Svelte docs about \$effect usage rules
+
+### The Fundamental Problem:
+
+**I'm not treating documentation as authoritative source of truth.**
+
+Each time I make a Svelte 5 mistake, the answer is in:
+- AGENTS.md (lines 22-31, 80-91, 114-161)
+- Svelte 5 llms.txt documentation
+
+I need to **STOP making assumptions** and **START reading documentation first**.
+
+### Correct Workflow Going Forward:
+
+\`\`\`
+BEFORE CODING ANY SVELTE 5 CODE:
+1. Read AGENTS.md lines 22-31 (HARD RULES, ADMIT YOUR MISTAKES)
+2. Read AGENTS.md lines 114-161 (Svelte Guidelines, File Naming Conventions)
+3. Read Svelte 5 llms.txt: https://svelte.dev/docs/svelte/llms.txt
+4. Check AGENTS-MISTAKES.md - Have I made this error before?
+5. Code based on DOCUMENTATION, not assumptions
+6. Verify against documentation before claiming \"done\"
+\`\`\`
+
+### Key Documentation Sections I Must Reference:
+
+**AGENTS.md:**
+- Lines 22-37: HARD RULES, ADMIT YOUR MISTAKES
+- Lines 80-91: Recommended Framework Documentation (Svelte 5 link)
+- Lines 114-161: Svelte Guidelines, File Naming Conventions
+
+**Svelte 5 llms.txt:**
+- .svelte.js and .svelte.ts files section
+- \$state section (especially deep state, classes)
+- \$derived section
+- \$effect section (especially \"Understanding lifecycle\", \"Understanding dependencies\")
+- \$props section (especially Updating props, Type safety)
+- Passing state across modules (CRITICAL for store files)
+
+### Commitment:
+
+**I will NOT write Svelte 5 code without first reading BOTH:**
+1. AGENTS.md (project conventions)
+2. Svelte 5 llms.txt (official syntax documentation)
+
+**If I am uncertain about ANYTHING:**
+1. Stop coding
+2. Read documentation
+3. Ask master for clarification
+4. Proceed only when confident
+
+This pattern has caused me to make 6 mistakes. It MUST STOP now.
+"
+
+---
+
+## Pattern of Mistakes: Not Reading Documentation Before Coding
+
+### What I Keep Doing Wrong:
+
+I repeatedly make Svelte 5 coding mistakes because I **DO NOT follow this workflow**:
+
+1. ❌ Start coding immediately based on assumptions
+2. ❌ Guess syntax without reading documentation
+3. ❌ Make errors, get corrected, move to next thing
+4. ❌ Repeat of same pattern
+
+### What I Should Be Doing:
+
+1. ✅ **FIRST: Read AGENTS.md** - Understand project conventions
+2. ✅ **SECOND: Read Svelte 5 llms.txt** - Understand syntax and patterns
+3. ✅ **THIRD: Code based on documentation** - Not assumptions
+4. ✅ **FOURTH: Verify** - Test and confirm with master
+
+### All Svelte 5 Mistakes I Made:
+
+1. **Mistake 5** - Wrong about .svelte.ts vs .ts extensions
+   - Initially said stores should use .ts (WRONG)
+   - Corrected to: stores MUST use .svelte.ts
+   - Root cause: Didn't read Svelte docs about .svelte.ts files
+
+2. **Mistake 15** - Used old 'on:click' syntax
+   - AVOID 'on:click', use 'onclick' (Svelte 5)
+   - Root cause: AGENTS.md line 126 explicitly forbids 'on:click', I didn't read it
+
+3. **Mistake 16** - Imported runes in .svelte.ts files
+   - Tried to import '$state', '$derived', '$effect' from 'svelte/reactivity'
+   - Runes are GLOBAL in .svelte.ts files
+   - Root cause: Didn't read Svelte docs about .svelte.ts file rules
+
+4. **Mistake 17** - Exported state directly from .svelte.ts
+   - Tried 'export let currentProfile = $state(...)'
+   - Must export getter functions: 'export const getCurrentProfile = () => currentProfile'
+   - Root cause: Didn't read Svelte docs about state export restrictions
+
+5. **Mistake 18** - Missing full file extensions in imports
+   - Used 'import from "$lib/vn.types"' (missing .ts)
+   - Master explicitly told me to use full extensions
+   - Root cause: Didn't read AGENTS.md line 138 (full extensions required)
+
+6. **Mistake 19** - Used $effect at top level of .svelte.ts
+   - Put '$effect(() => { ... })' in store file (module level)
+   - '$effect' only works during component initialization
+   - Root cause: Didn't read Svelte docs about $effect usage rules
+
+### The Fundamental Problem:
+
+**I'm not treating documentation as authoritative source of truth.**
+
+Each time I make a Svelte 5 mistake, the answer is in:
+- AGENTS.md (lines 22-31, 80-91, 114-161)
+- Svelte 5 llms.txt documentation
+
+I need to **STOP making assumptions** and **START reading documentation first**.
+
+### Correct Workflow Going Forward:
+
+```
+BEFORE CODING ANY SVELTE 5 CODE:
+1. Read AGENTS.md lines 22-31 (HARD RULES, ADMIT YOUR MISTAKES)
+2. Read AGENTS.md lines 114-161 (Svelte Guidelines, File Naming Conventions)
+3. Read Svelte 5 llms.txt: https://svelte.dev/docs/svelte/llms.txt
+4. Check AGENTS-MISTAKES.md - Have I made this error before?
+5. Code based on DOCUMENTATION, not assumptions
+6. Verify against documentation before claiming "done"
+```
+
+### Key Documentation Sections I Must Reference:
+
+**AGENTS.md:**
+- Lines 22-37: HARD RULES, ADMIT YOUR MISTAKES
+- Lines 80-91: Recommended Framework Documentation (Svelte 5 link)
+- Lines 114-161: Svelte Guidelines, File Naming Conventions
+
+**Svelte 5 llms.txt:**
+- .svelte.js and .svelte.ts files section
+- $state section (especially deep state, classes)
+- $derived section
+- $effect section (especially "Understanding lifecycle", "Understanding dependencies")
+- $props section (especially Updating props, Type safety)
+- Passing state across modules (CRITICAL for store files)
+
+### Commitment:
+
+**I will NOT write Svelte 5 code without first reading BOTH:**
+1. AGENTS.md (project conventions)
+2. Svelte 5 llms.txt (official syntax documentation)
+
+**If I am uncertain about ANYTHING:**
+1. Stop coding
+2. Read documentation
+3. Ask master for clarification
+4. Proceed only when confident
+
+This pattern has caused me to make 6 mistakes. It MUST STOP now.
