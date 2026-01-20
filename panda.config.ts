@@ -1,6 +1,6 @@
 // Panda CSS configuration for Bearcu Visual Novel
 // Reference: https://panda-css.com/docs/introduction
-import { defineConfig } from '@pandacss/core'
+import { defineConfig } from '@pandacss/dev'
 
 export default defineConfig({
 	preflight: true,
