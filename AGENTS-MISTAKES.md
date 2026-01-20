@@ -616,3 +616,84 @@ This pattern is consistent across all framework examples:
 - Panda CSS installation guide: https://panda-css.com/llms.txt/installation
 - @pandacss/dev package: Contains CLI and config utilities
 - @pandacss/core package: Internal functions (not for config creation)
+
+---
+
+## Mistake 13: Importing Non-Existent File in src/main.ts
+
+### What I Did Wrong:
+
+- Added `import './styled-system/styles.css'` to src/main.ts
+- File does not exist in styled-system directory
+- Got import analysis error from Vite:
+  ```
+  Failed to resolve import "./styled-system/styles.css" from "src/main.ts"
+  ```
+- Did not verify file exists before importing it
+
+### Root Cause:
+
+- Assumed styled-system/styles.css would exist after Panda CSS setup
+- Did not check what files actually exist in styled-system/ directory
+- Pandu CSS codegen failed to generate the CSS file (due to lightningcss bug)
+- styled-system/ only contains .mjs and .d.ts files, NO styles.css
+
+### What Actually Exists in styled-system:
+
+```
+styled-system/
+├── css/
+│   ├── conditions.mjs
+│   ├── css.mjs
+│   ├── cva.mjs
+│   ├── cva.d.ts
+│   ├── css.d.ts
+│   ├── cx.d.ts
+│   ├── cx.mjs
+│   ├── index.d.ts
+│   ├── index.mjs
+│   ├── sva.d.ts
+│   └── sva.mjs
+├── helpers.mjs
+├── patterns/
+├── tokens/
+└── types/
+```
+
+### Correct Approach:
+
+- **ALWAYS verify file exists before importing**
+- Check directory contents: `ls -la styled-system/` before adding import
+- If styled-system/styles.css doesn't exist:
+  1. Don't import it yet
+  2. Comment it out or remove
+  3. Add note to generate when codegen works
+- Or use alternative: `import './style.css'` (regular CSS file)
+
+### What Should Have Done:
+
+1. Check styled-system directory structure
+2. Verify styles.css file exists
+3. Only add import if file exists
+4. If file missing, ask master or note as TODO
+
+### Lessons Learned:
+
+- **File existence check is mandatory**: Before `import`, verify file exists
+- **Package bugs affect file generation**: Panda CSS codegen bug means styles.css won't exist
+- **Don't assume file structure**: Even if documentation says "styles.css will be generated", verify it exists
+- **Import errors block build**: Missing import causes Vite to fail import analysis
+- **Check before commit**: Should have run dev server to see import error before pushing
+
+### What Should Have Documented:
+
+- **Error**: Imported non-existent file "./styled-system/styles.css"
+- **Cause**: Did not check if file exists before importing
+- **Missing step**: `ls styled-system/` to verify structure
+- **Should have tested**: Run `bun run d` before committing to catch this error
+
+### Reference:
+
+- Vite import resolution error
+- Panda CSS codegen bug (Mistake 10) - styles.css not generated
+- AGENTS.md: "ALWAYS verify" pattern (multiple occurrences)
