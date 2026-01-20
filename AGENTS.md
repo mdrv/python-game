@@ -21,6 +21,18 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 - MUST utilize Bun and TypeScript in all possible parts of code.
 
+## ADMIT YOUR MISTAKES
+
+- If encountering a bug/error, attempt up to 3 logical solutions
+  - Read `AGENTS-MISTAKES.md` in case you have encountered this issue before.
+- If no progress after 3 attempts OR 5 minutes, STOP and provide:
+  1. What you tried
+  2. Error messages
+  3. Possible causes
+  4. Write your mistakes on `AGENTS-MISTAKES.md`
+  5. Next steps for your master to try manually
+- Update `AGENTS-MISTAKES.md` based on the fix/solution given by your master.
+
 ## Formatting Standards
 
 When to run dprint:
@@ -61,6 +73,8 @@ When TypeScript not possible:
 ## Recommended Framework Documentation References
 
 Before writing code, consult:
+
+- **Bun**: https://bun.com/llms.txt
 - **SvelteKit**: https://svelte.dev/docs/kit/llms.txt
 - **Svelte 5**: https://svelte.dev/docs/svelte/llms.txt
 - **Vite**: https://vite.dev/llms.txt
@@ -69,8 +83,9 @@ Before writing code, consult:
 - **Astro**: https://docs.astro.build/llms.txt
 - **ElysiaJS**: https://elysiajs.com/llms.txt
 
-## AVOID these frameworks
+## AVOID these commands/frameworks
 
+- Node.js/NPM (Bun can replace those mostly)
 - React (not my style of writing + less pure HTML-based)
 - TailwindCSS (prefer not to use hardcoded classes)
 - SvelteKit (quite restrictive in my opinion, unless for prototyping)

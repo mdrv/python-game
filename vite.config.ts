@@ -1,0 +1,14 @@
+import pandaCss from '@pandacss/vite-plugin'
+import { svelte } from '@sveltejs/vite-plugin-svelte'
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+	plugins: [
+		svelte(),
+		pandaCss(),
+	],
+	server: {
+		port: 5173,
+		open: false,
+	},
+})
