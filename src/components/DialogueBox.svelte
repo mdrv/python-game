@@ -1,6 +1,6 @@
 <script lang='ts'>
-	import type { DialogueNode } from '$lib/vn.types'
-	import { t } from '$stores/i18n'
+	import type { DialogueNode } from '$lib/vn.types.ts'
+	import { t } from '$stores/i18n.svelte.ts'
 
 	// Props using Svelte 5 $props rune
 	interface Props {

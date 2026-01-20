@@ -1,4 +1,4 @@
-import type { Chapter } from '$lib/vn.types'
+import type { Chapter } from '$lib/vn.types.ts'
 
 // Chapter 1: Hello World - Python Basics
 export const chapter1: Chapter = {

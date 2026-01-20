@@ -1,14 +1,17 @@
 <!-- OPENSPEC:START -->
+
 # OpenSpec Instructions
 
 These instructions are for AI assistants working in this project.
 
 Always open `@/openspec/AGENTS.md` when the request:
+
 - Mentions planning or proposals (words like proposal, spec, change, plan)
 - Introduces new capabilities, breaking changes, architecture shifts, or big performance/security work
 - Sounds ambiguous and you need the authoritative spec before coding
 
 Use `@/openspec/AGENTS.md` to learn:
+
 - How to create and apply change proposals
 - Spec format and conventions
 - Project structure and guidelines
@@ -36,6 +39,7 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 ## Formatting Standards
 
 When to run dprint:
+
 - ✅ After making code changes: Run `dprint fmt` on modified files only
 - ✅ After implementing features: Format all touched files
 - ❌ Don't format entire repo unless explicitly requested
@@ -44,12 +48,13 @@ When to run dprint:
 ## Styling Guidelines
 
 Use Panda CSS when:
+
 - Component has 3+ style properties
 - Styles need to be shared across multiple components
 - Need responsive variants or theme support
 - Working with design system tokens
 - Creating reusable component library
-Use inline styles (right on HTML tags) when:
+  Use inline styles (right on HTML tags) when:
 - Simple single-component styling (1-2 properties)
 - One-off element adjustments
 - Prototyping or temporary changes
@@ -58,14 +63,16 @@ Use inline styles (right on HTML tags) when:
 ## TypeScript Usage Policy
 
 For NEW code:
+
 - ✅ Always use TypeScript (.ts files)
 - ✅ Define interfaces/types for all function parameters
 - ✅ Enable strict mode in tsconfig.json
-For EXISTING code:
+  For EXISTING code:
 - ✅ Extensively modified .js files: Convert to .ts
 - ✅ Test files: Keep .js but add JSDoc type annotations
 - ✅ Config files in some ecosystems: Keep .js, add `// @ts-check` at top
-When TypeScript not possible:
+  When TypeScript not possible:
+
 1. Add JSDoc comments with @param, @return, @type
 2. Use strict null checks
 3. Avoid implicit 'any' types
@@ -93,6 +100,7 @@ Before writing code, consult:
 ## Package management policy
 
 When to check NPM registry:
+
 - **Installing NEW packages**: Always check https://npmjs.org/package/<name> for latest version
 - **Updating existing packages**: Check if major version bump exists before update
 - **Existing working code**: DON'T check unless the master requests audit/update
@@ -117,9 +125,45 @@ When to check NPM registry:
   - EMBRACE newest features such as $state/$derived/$props, onMount, mount(), @attach, snippets.
   - AVOID deprecated or outdated syntax such as `export let`, `on:click`, slots, new App(), svelte/store.
 
+## File Naming Conventions
+
+### File Extensions
+
+- **Store files**: Use `.svelte.ts` extension (NOT `.ts`)
+- **Regular TypeScript files**: Use `.ts` extension
+- **Svelte components**: Use `.svelte` extension
+
+### Import Path Conventions
+
+- **ALWAYS use full file extension** in imports (including `.ts`):
+  ```typescript
+  import type { Chapter } from '$lib/vn.types' // ❌ Wrong - missing .ts
+  import type { Chapter } from '$lib/vn.types.ts' // ✅ Correct
+  ```
+- **Store imports** (from `.svelte.ts` files):
+  ```typescript
+  import { createProfile } from '$stores/save.svelte' // ❌ Wrong - missing .ts
+  import { createProfile } from '$stores/save.svelte.ts' // ✅ Correct
+  ```
+
+### .svelte.ts File Rules
+
+- **Runes are available globally**: Do NOT import `$state`, `$derived`, `$effect` from `'svelte/reactivity'`
+- **State must NOT be exported directly**: Instead, export getter functions:
+  ```typescript
+  // ❌ Wrong - Direct export will fail
+  export let currentProfile = $state<KidProfile | null>(null)
+
+  // ✅ Correct - Export getter function
+  let currentProfile = $state<KidProfile | null>(null)
+  export const getCurrentProfile = () => currentProfile
+  ```
+- **Reassignments**: Only mutate state properties, don't reassign exported state variables
+
 ## Agent Self-Correction Protocol
 
 If agent makes a mistake or realizes an error in previous action:
+
 1. **Acknowledge explicitly**: "I made a mistake"
 2. **Explain the error**: What went wrong and why
 3. **Propose a fix**: Clear correction to the mistake

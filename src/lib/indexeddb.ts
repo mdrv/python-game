@@ -1,7 +1,7 @@
 // IndexedDB Wrapper Library
 // Reference: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API/Using_IndexedDB
 
-import type { IndexedDBConfig, InitOptions, KidProfile, SaveResult } from './indexeddb.types'
+import type { IndexedDBConfig, InitOptions, KidProfile, SaveResult } from './indexeddb.types.ts'
 
 // Default configuration
 const DEFAULT_CONFIG: IndexedDBConfig = {

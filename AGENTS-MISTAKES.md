@@ -135,38 +135,56 @@
 
 ---
 
-## Mistake 5: Not Following Latest Documentation for Svelte 5
+## Mistake 5: Not Following Latest Documentation for Svelte 5 (CORRECTED)
 
 ### What I Did Wrong:
 
-- Created store files with wrong extensions (`.svelte.ts` instead of `.ts`)
-- Attempted to use Svelte 5 syntax without reading official docs
-- Didn't verify package existence and latest versions on npm registry
+- Initially thought store files should use `.ts` extension
+- **Mistake 5 was completely INCORRECT** - I got it backwards
+- The correct convention is `.svelte.ts`, not `.ts`
 
-### Root Cause:
+### CORRECT Information (Fixed):
 
-- I was working with outdated mental models of Svelte
-- Didn't consult official documentation for Svelte 5
+- **Store files MUST use `.svelte.ts` extension**
+- **`.svelte.ts` files have special rules**:
+  - Runes are available globally (no import needed)
+  - State cannot be exported directly (must use getter functions)
+- **Regular `.ts` files** cannot use runes (they must import from `'svelte/reactivity'`)
 
-### Correct Approach from Latest Docs:
+### Correct Pattern:
 
-- **Store files should use `.ts` extension, not `.svelte.ts`**
-- **Use runes correctly**: `$state`, `$derived`, `$effect`, `$props` (Svelte 5 specific)
-- **Read official docs** at https://svelte.dev/docs/svelte/llms.txt before using new features
-- **Always verify** package versions on npm registry
-- **Follow framework conventions** from official documentation
+```typescript
+// File: src/stores/example.svelte.ts
+
+// Runes available globally - no import needed
+let state = $state({ value: 0 })
+
+// Export getter function (NOT direct export)
+export const getState = () => state
+
+// Functions are fine to export directly
+export function updateValue(newValue: number) {
+	state.value = newValue
+}
+```
+
+### Lessons Learned:
+
+- **Mistake 5 was wrong**: I initially documented the opposite of what's correct
+- **`.svelte.ts` is special**: Different from regular `.ts` files
+- **AGENTS.md now documents this**: File Naming Conventions section
+- **Master corrected me**: Store files use `.svelte.ts`, not `.ts`
+
+### What This Mistake Shows:
+
+- **Always verify conventions**: Don't rely on assumptions
+- **AGENTS.md is authoritative**: File Naming Conventions section has the correct rules
+- **Mistakes can compound**: Wrong information led to more mistakes
 
 ### Reference:
 
 - Svelte 5 official docs: https://svelte.dev/docs/svelte/llms.txt
-- Svelte 5 runes reference: Same documentation
-- Vite plugin svelte: Check GitHub README for proper configuration
-- AGENTS.md line: "Before writing code, consult: Vite, Svelte 5, Vite, Panda CSS"
-
-### Outcome:
-
-- Created files with wrong syntax that caused LSP errors
-- Need to recreate files following Svelte 5 conventions
+- AGENTS.md lines 119-127: File Naming Conventions (CORRECTED)
 
 ---
 
@@ -784,6 +802,218 @@ This connects to multiple previous mistakes:
 - Panda CSS PostCSS installation guide: https://panda-css.com/llms.txt/installation
 - Pattern is consistent across ALL frameworks (Next.js, Svelte, Vite, etc.)
 - AGENTS.md line 81: "Panda CSS: https://panda-css.com/llms.txt"
+
+---
+
+## Mistake 16: Importing Runes in .svelte.ts Files
+
+### What I Did Wrong:
+
+- Imported `$state`, `$derived`, `$effect` from `'svelte/reactivity'` in `.svelte.ts` files
+- Got Svelte compile error: "The $ prefix is reserved, and cannot be used for variables and imports"
+- Error occurred in save.svelte.ts, story.svelte.ts, and i18n.svelte.ts
+
+### Root Cause:
+
+- **Runes are available globally in `.svelte` and `.svelte.ts` files**
+- Just like regular `.svelte` components, `.svelte.ts` store files don't need to import runes
+- AGENTS.md now documents this rule explicitly
+
+### The Error:
+
+```
+[plugin:vite-plugin-svelte-module] /x/g/vdev/python-game/src/stores/save.svelte.ts:2:9
+The $ prefix is reserved, and cannot be used for variables and imports
+https://svelte.dev/e/dollar_prefix_invalid
+```
+
+### What Was Wrong:
+
+```typescript
+// ❌ WRONG - Runes are global in .svelte.ts
+import { $derived, $effect, $state } from 'svelte/reactivity'
+
+export let currentProfile = $state<KidProfile | null>(null)
+```
+
+### Correct Approach:
+
+```typescript
+// ✅ CORRECT - Runes available globally, no import needed
+
+export let currentProfile = $state<KidProfile | null>(null)
+```
+
+### Lessons Learned:
+
+- **Runes are global in `.svelte.ts` files**: Just like `.svelte` components
+- **Don't import runes**: `$state`, `$derived`, `$effect` are available automatically
+- **This is intentional**: Svelte 5 treats `.svelte.ts` as special module type
+- **AGENTS.md documents this**: File Naming Conventions section
+
+### What Should Have Done:
+
+1. **Read Svelte 5 documentation** on `.svelte.ts` files
+2. **Check AGENTS.md** for file naming conventions
+3. **Never import runes** in `.svelte.ts` files
+
+### Reference:
+
+- Svelte 5 documentation: https://svelte.dev/docs/svelte/llms.txt
+- AGENTS.md lines 119-127: File Naming Conventions
+
+---
+
+## Mistake 17: Exporting State Directly from .svelte.ts Files
+
+### What I Did Wrong:
+
+- Exported `$state` variables directly from `.svelte.ts` store files
+- Got Svelte compile error: "Cannot export state from a module if it is reassigned"
+- Exported state variables like `export let chapters = $state<>()` and `export let currentProfile = $state<>()`
+
+### Root Cause:
+
+- **`.svelte.ts` files have special rules** for exporting reactive state
+- Cannot directly export state that gets reassigned during execution
+- Must export **getter functions** instead of the state itself
+
+### The Error:
+
+```
+[plugin:vite-plugin-svelte-module] src/stores/story.svelte.ts:1:0
+Cannot export state from a module if it is reassigned.
+Either export a function returning the state value or only mutate state value's properties
+https://svelte.dev/e/state_invalid_export
+```
+
+### What Was Wrong:
+
+```typescript
+// ❌ WRONG - Direct export of reassigned state
+export let storyState = $state<StoryState>({ ... })
+export let chapters = $state<Map<number, Chapter>>(new Map())
+export let currentScene = $state<Scene | null>(null)
+export let currentDialogue = $state<DialogueNode | null>(null)
+
+// Later reassigns these values
+storyState = { ... }
+currentScene = scene
+currentDialogue = currentScene.dialogues[index]
+```
+
+### Correct Approach:
+
+```typescript
+// ✅ CORRECT - Private state, public getter functions
+let storyState = $state<StoryState>({ ... })
+let chapters = $state<Map<number, Chapter>>(new Map())
+let currentScene = $state<Scene | null>(null)
+let currentDialogue = $state<DialogueNode | null>(null)
+
+// Export getter functions
+export const getStoryState = () => storyState
+export const getChapters = () => chapters
+export const getCurrentScene = () => currentScene
+export const getCurrentDialogue = () => currentDialogue
+```
+
+### How to Use in Components:
+
+```typescript
+// ❌ WRONG - Direct import of state
+import { currentDialogue, currentScene } from '$stores/story.svelte.ts'
+
+// ✅ CORRECT - Use getter functions
+import { getCurrentDialogue, getCurrentScene } from '$stores/story.svelte.ts'
+
+// Store in local variable
+let currentDialogue = getCurrentDialogue()
+let currentScene = getCurrentScene()
+```
+
+### Lessons Learned:
+
+- **State must be private in `.svelte.ts`**: Use `let`, not `export let`
+- **Export getter functions**: `export const getName = () => name`
+- **Getter functions return reactive values**: They preserve reactivity
+- **AGENTS.md documents this**: File Naming Conventions section
+
+### What Should Have Done:
+
+1. **Read Svelte 5 documentation** on `.svelte.ts` export patterns
+2. **Use getter functions pattern** from the start
+3. **Follow store conventions** established by Svelte community
+
+### Reference:
+
+- Svelte 5 documentation: https://svelte.dev/docs/svelte/llms.txt
+- AGENTS.md lines 119-127: File Naming Conventions
+
+---
+
+## Mistake 18: Not Using Full File Extensions in Imports
+
+### What I Did Wrong:
+
+- Imported files without full extensions: `import type { Chapter } from '$lib/vn.types'`
+- Master explicitly told me: "Use whole extension when importing even ts files"
+- Missing `.ts` extension in imports across multiple files
+
+### Root Cause:
+
+- **AGENTS.md now explicitly requires** full file extensions in all imports
+- I was following old TypeScript/JavaScript conventions where extensions are optional
+- New convention: **Always include full extension** (`.ts`, `.svelte`, `.svelte.ts`)
+
+### What Was Wrong:
+
+```typescript
+// ❌ WRONG - Missing extensions
+import { getProfile } from '$lib/indexeddb'
+import type { DialogueNode } from '$lib/vn.types'
+import { t } from '$stores/i18n.svelte'
+import { chapter1 } from '$stories/chapter1'
+```
+
+### Correct Approach:
+
+```typescript
+// ✅ CORRECT - Full extensions
+import { getProfile } from '$lib/indexeddb.ts'
+import type { DialogueNode } from '$lib/vn.types.ts'
+import { t } from '$stores/i18n.svelte.ts'
+import { chapter1 } from '$stories/chapter1.ts'
+```
+
+### Files Fixed:
+
+1. **App.svelte**: All imports from `$stores` and `$stories` updated
+2. **DialogueBox.svelte**: Import from `$lib/vn.types.ts`
+3. **BearcuCharacter.svelte**: Import from `$lib/vn.types.ts`
+4. **ChoiceMenu.svelte**: Import from `$lib/vn.types.ts`
+5. **AutoSaveIndicator.svelte**: Imports from `$stores/save.svelte.ts`
+6. **save.svelte.ts**: Import from `$lib/indexeddb.ts` and `$lib/indexeddb.types.ts`
+7. **story.svelte.ts**: Import from `$lib/vn.types.ts`
+8. **chapter1.ts**: Import from `$lib/vn.types.ts`
+
+### Lessons Learned:
+
+- **Full extensions are mandatory**: All imports must include `.ts` or `.svelte`
+- **AGENTS.md is explicit**: "ALWAYS use full file extension in imports (including .ts)"
+- **This is a project convention**: Not just TypeScript default behavior
+- **Consistency is key**: All imports follow the same pattern
+
+### What Should Have Done:
+
+1. **Read AGENTS.md** File Naming Conventions section
+2. **Use full extensions** from the beginning
+3. **Check imports** after renaming files to ensure consistency
+
+### Reference:
+
+- AGENTS.md lines 119-127: File Naming Conventions
+- Import examples show correct pattern with full extensions
 
 ---
 

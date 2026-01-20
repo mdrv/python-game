@@ -2,8 +2,6 @@
 // Future: Expand to support multiple languages
 // Reference: https://svelte.dev/docs/svelte/runes
 
-import { $state } from 'svelte/reactivity'
-
 export type Language = 'id' | 'en' | 'ja'
 
 export interface Translation {
@@ -57,8 +55,12 @@ const idTranslations: Translation = {
 	},
 }
 
-export let currentLanguage = $state<Language>('id')
-export let translations = $state<Translation>(idTranslations)
+let currentLanguage = $state<Language>('id')
+let translations = $state<Translation>(idTranslations)
+
+// Export getter functions
+export const getCurrentLanguage = () => currentLanguage
+export const getTranslations = () => translations
 
 /**
  * Get translated UI text

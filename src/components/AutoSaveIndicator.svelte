@@ -1,8 +1,12 @@
 <script lang='ts'>
-	import { t } from '$stores/i18n'
-	import { autoSaveStatus, currentProfile } from '$stores/save'
+	import { t } from '$stores/i18n.svelte.ts'
+	import { getAutoSaveStatus, getCurrentProfile } from '$stores/save.svelte.ts'
 
 	let autoSaveVisible = $state(false)
+
+	// Get store values
+	let autoSaveStatus = getAutoSaveStatus()
+	let currentProfile = getCurrentProfile()
 
 	$effect(() => {
 		if (

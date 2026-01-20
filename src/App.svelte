@@ -3,27 +3,31 @@
 	import BearcuCharacter from '$components/BearcuCharacter.svelte'
 	import ChoiceMenu from '$components/ChoiceMenu.svelte'
 	import DialogueBox from '$components/DialogueBox.svelte'
-	import type { Chapter } from '$lib/vn.types'
 	import {
 		createProfile,
 		initSaveSystem,
 		updateStoryProgress,
-	} from '$stores/save'
+	} from '$stores/save.svelte.ts'
 	import {
-		chapters,
-		currentDialogue,
-		currentScene,
+		getChapters,
+		getCurrentDialogue,
+		getCurrentScene,
 		loadChapter,
 		loadScene,
 		nextDialogue,
 		recordChoice,
-	} from '$stores/story'
-	import { chapter1 } from '$stories/chapter1'
+	} from '$stores/story.svelte.ts'
+	import { chapter1 } from '$stories/chapter1.ts'
 	import { onMount } from 'svelte'
 
 	// Local state
 	let appReady = $state(false)
 	let showChoiceMenu = $state(false)
+
+	// Get store values
+	let chapters = getChapters()
+	let currentScene = getCurrentScene()
+	let currentDialogue = getCurrentDialogue()
 
 	// Initialize app on mount
 	onMount(async () => {

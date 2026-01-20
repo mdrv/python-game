@@ -2,11 +2,10 @@
 // Uses Svelte 5 runes for reactive state management
 // Reference: https://svelte.dev/docs/svelte/runes
 
-import type { DialogueNode, Scene, StoryState } from '$lib/vn.types'
-import { $derived, $state } from 'svelte/reactivity'
+import type { DialogueNode, Scene, StoryState } from '$lib/vn.types.ts'
 
 // Current story state
-export let storyState = $state<StoryState>({
+let storyState = $state<StoryState>({
 	currentChapter: 1,
 	currentScene: '',
 	currentDialogueIndex: 0,
@@ -16,23 +15,31 @@ export let storyState = $state<StoryState>({
 })
 
 // Store all chapters
-export let chapters = $state<Map<number, Chapter>>(new Map())
+let chapters = $state<Map<number, Chapter>>(new Map())
 
 // Store current scene
-export let currentScene = $state<Scene | null>(null)
+let currentScene = $state<Scene | null>(null)
 
 // Store current dialogue
-export let currentDialogue = $state<DialogueNode | null>(null)
+let currentDialogue = $state<DialogueNode | null>(null)
 
 // Derived: Check if chapter is complete
-export let isChapterComplete = $derived(
+let isChapterComplete = $derived(
 	storyState.completedChapters.includes(storyState.currentChapter),
 )
 
 // Derived: Get current chapter
-export let activeChapter = $derived(
+let activeChapter = $derived(
 	chapters.get(storyState.currentChapter) || null,
 )
+
+// Export getter functions for state
+export const getStoryState = () => storyState
+export const getChapters = () => chapters
+export const getCurrentScene = () => currentScene
+export const getCurrentDialogue = () => currentDialogue
+export const getIsChapterComplete = () => isChapterComplete
+export const getActiveChapter = () => activeChapter
 
 /**
  * Load chapter data into store

@@ -2,19 +2,18 @@
 // Uses Svelte 5 runes for reactive state management
 // Reference: https://svelte.dev/docs/svelte/runes
 
-import { getProfile, initIndexedDB, isDatabaseInitialized, saveProfile } from '$lib/indexeddb'
-import type { AutoSaveStatus, KidProfile } from '$lib/indexeddb.types'
-import { $derived, $effect, $state } from 'svelte/reactivity'
+import { getProfile, initIndexedDB, isDatabaseInitialized, saveProfile } from '$lib/indexeddb.ts'
+import type { AutoSaveStatus, KidProfile } from '$lib/indexeddb.types.ts'
 
 /**
  * Current kid profile state
  */
-export let currentProfile = $state<KidProfile | null>(null)
+let currentProfile = $state<KidProfile | null>(null)
 
 /**
  * Auto-save status (used by AutoSaveIndicator component)
  */
-export let autoSaveStatus = $state<AutoSaveStatus>('idle')
+let autoSaveStatus = $state<AutoSaveStatus>('idle')
 
 /**
  * Auto-save timeout ID (for debouncing)
@@ -37,14 +36,20 @@ const AUTO_SAVE_CONFIG = {
 /**
  * Derived: Check if a profile is loaded
  */
-export let isProfileLoaded = $derived(currentProfile !== null)
+let isProfileLoaded = $derived(currentProfile !== null)
 
 /**
  * Derived: Check if auto-save is in progress
  */
-export let isAutoSaving = $derived(
+let isAutoSaving = $derived(
 	autoSaveStatus === 'pending' || autoSaveStatus === 'saving',
 )
+
+// Export getter functions for state
+export const getCurrentProfile = () => currentProfile
+export const getAutoSaveStatus = () => autoSaveStatus
+export const getIsProfileLoaded = () => isProfileLoaded
+export const getIsAutoSaving = () => isAutoSaving
 
 /**
  * Initialize the database and load profile

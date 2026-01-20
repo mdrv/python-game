@@ -3,7 +3,7 @@
 		AnimationType,
 		CharacterState,
 		ExpressionType,
-	} from '$lib/vn.types'
+	} from '$lib/vn.types.ts'
 
 	// Props using Svelte 5 $props rune
 	interface Props {

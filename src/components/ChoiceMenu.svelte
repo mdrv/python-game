@@ -1,5 +1,5 @@
 <script lang='ts'>
-	import type { Choice } from '$lib/vn.types'
+	import type { Choice } from '$lib/vn.types.ts'
 
 	// Props using Svelte 5 $props rune
 	interface Props {
