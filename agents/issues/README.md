@@ -23,7 +23,7 @@ Each category is a separate Markdown file containing related mistakes. Read file
 
 ## Mistakes Overview
 
-Total mistakes documented: **33**
+Total mistakes documented: **23**
 
 ## Learning Priorities
 
