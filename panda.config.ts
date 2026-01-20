@@ -5,6 +5,10 @@ import { defineConfig } from '@pandacss/dev'
 export default defineConfig({
 	preflight: true,
 	include: ['./src/**/*.{js,jsx,svelte,ts,tsx}'],
+	// Files to exclude
+	exclude: [],
+	// The output directory for the css system
+	outdir: 'styled-system',
 	theme: {
 		extend: {
 			colors: {
